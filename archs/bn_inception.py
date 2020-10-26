@@ -46,6 +46,7 @@ class BNInception(nn.Module):
         return x
 
     def features(self, x):
+        "The overall structure of bn-inception"
         # stage1
         pool1_3x3_s2_out = self._temporal_forward_wrap(self._block_1, 0)(x)
         # stage2
@@ -69,7 +70,7 @@ class BNInception(nn.Module):
 
     def logits(self, features):
         x = self.global_pool(features)
-        x = x.view(x.size(0), -1)
+        x = x.view(x.size(0), -1) # x = (c,h,w),torch.view(a,-1)：auto-complete col vector,number of col=number of elements(x)/a
         x = self.fc(x)
         return x
 
@@ -411,14 +412,14 @@ class BNInception(nn.Module):
         return inception_5b_output_out
 
     def _build_features(self, inplace, num_classes):
-        self.conv1_7x7_s2 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3))
+        self.conv1_7x7_s2 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3)) 
         self.conv1_7x7_s2_bn = nn.BatchNorm2d(64, eps=1e-05, momentum=0.9, affine=True)
         self.conv1_relu_7x7 = nn.ReLU(inplace)
         self.pool1_3x3_s2 = nn.MaxPool2d((3, 3), stride=(2, 2), dilation=(1, 1), ceil_mode=True)
-        self.conv2_3x3_reduce = nn.Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1))
+        self.conv2_3x3_reduce = nn.Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1))            
         self.conv2_3x3_reduce_bn = nn.BatchNorm2d(64, eps=1e-05, momentum=0.9, affine=True)
         self.conv2_relu_3x3_reduce = nn.ReLU(inplace)
-        self.conv2_3x3 = nn.Conv2d(64, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        self.conv2_3x3 = nn.Conv2d(64, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))  
         self.conv2_3x3_bn = nn.BatchNorm2d(192, eps=1e-05, momentum=0.9, affine=True)
         self.conv2_relu_3x3 = nn.ReLU(inplace)
         self.pool2_3x3_s2 = nn.MaxPool2d((3, 3), stride=(2, 2), dilation=(1, 1), ceil_mode=True)
